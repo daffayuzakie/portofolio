@@ -1,9 +1,9 @@
 /**
  * ambient.js
- * Interactive city-grid backdrop drawn on a fixed full-viewport canvas
- * (a vanilla port of the React ShapeGrid component). The whole grid drifts
- * gently, and the cell under the cursor lights up white with an easing fill
- * plus a fading trail.
+ * Static shape-grid backdrop drawn on a fixed full-viewport canvas (a
+ * vanilla port of the React ShapeGrid component). Unlike the original it does
+ * NOT drift — the grid is stationary (speed = 0) — only the cell under the
+ * cursor lights up white with an easing fill plus a fading trail.
  *
  * Runs on a requestAnimationFrame loop capped to ~30fps, and only while the
  * canvas is on screen and the page is visible. On mobile the canvas stays
@@ -29,9 +29,8 @@ export function initAmbient() {
   const ctx = canvas.getContext('2d');
 
   const squareSize = 40;
-  const direction = 'right';
-  // Gentle drift (px per frame at ~30fps). Set to 0 for a fully static grid.
-  const speed = 0.5;
+  // Static grid: speed stays 0 so the cells never move, only the hover glow.
+  const speed = 0;
   const hoverTrailAmount = 6;
 
   const BORDER_COLOR = 'rgba(120, 150, 170, 0.45)';
@@ -56,8 +55,8 @@ export function initAmbient() {
   resizeCanvas();
 
   const drawGrid = () => {
-    // Paint an opaque near-black base first so the CSS grid gradient behind
-    // the canvas is fully covered (no double-grid moiré).
+    // Paint an opaque base first so the CSS grid gradient behind the canvas
+    // is fully covered (no double-grid moiré).
     ctx.fillStyle = BASE_FILL;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -88,8 +87,8 @@ export function initAmbient() {
     }
 
     // Vignette: a transparent-centred radial gradient fades the grid edges
-    // into the base colour, so cells near the corners/canvas edge don't pop
-    // as hard as cells under the cursor. (Mirrors the ShapeGrid gradient.)
+    // into the base colour, so cells near the corners don't pop as hard as
+    // cells under the cursor.
     const gradient = ctx.createRadialGradient(
       canvas.width / 2,
       canvas.height / 2,
@@ -139,26 +138,14 @@ export function initAmbient() {
   };
 
   const updateAnimation = (now = 0) => {
-    // Cap the draw loop to ~30fps (rAF fires at display refresh, typically
-    // 60/120Hz): a slowly-drifting grid doesn't need to repaint every frame,
-    // and halving the fill-rate keeps low-end desktops quiet.
+    // Cap the draw loop to ~30fps (rAF fires at display refresh). A static
+    // grid only repaints for the hover glow, so this just avoids needless
+    // full-canvas redraws on high-refresh displays.
     if (now - lastFrame < 33) {
       requestRef = requestAnimationFrame(updateAnimation);
       return;
     }
     lastFrame = now;
-
-    const wrapX = squareSize;
-    switch (direction) {
-      case 'right':
-        gridOffset.x = (gridOffset.x - speed + wrapX) % wrapX;
-        break;
-      case 'left':
-        gridOffset.x = (gridOffset.x + speed + wrapX) % wrapX;
-        break;
-      default:
-        break;
-    }
 
     updateCellOpacities();
     drawGrid();

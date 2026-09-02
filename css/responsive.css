@@ -53,6 +53,7 @@
 
   .nav-bar {
     max-width: calc(100vw - var(--space-3));
+    z-index: 99;
   }
 
   .glass-nav {

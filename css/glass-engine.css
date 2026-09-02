@@ -6,12 +6,13 @@
 
 /* ----------------------------------------------------------------------
    1. AMBIENT BACKGROUND
-   Desktop: an interactive canvas grid (js/ambient.js, a vanilla port of the
-   React ShapeGrid) — the cell under the cursor lights up white with a fading
-   trail, and the grid drifts slowly. Mobile (<=768px): the canvas is hidden
-   and the pure-CSS "blueprint" grid below is the backdrop, so mobile stays
-   ultra-light. Panels above use backdrop-filter, so the backdrop grid is
-   what the glass panels are visually "made of".
+   Desktop: a static shape grid drawn on a fixed full-viewport canvas
+   (js/ambient.js, a vanilla port of the React ShapeGrid). The grid does NOT
+   drift — only the cell under the cursor lights up white with a fading
+   trail. Mobile (<=768px): the canvas is hidden and the pure-CSS "blueprint"
+   grid below is the backdrop, so mobile stays ultra-light. Panels above use
+   backdrop-filter, so the backdrop grid is what the glass panels are
+   visually "made of".
    ------------------------------------------------------------------- */
 .ambient-bg {
   position: fixed;
@@ -41,20 +42,9 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  display: block; /* interactive canvas grid on desktop; the <=768px block
+  display: block; /* interactive shape grid on desktop; the <=768px block
                      below hides it so mobile keeps the cheap CSS grid. */
   z-index: 0;
-}
-
-/* A faint noise layer breaks up the smoothness of the gradients so large
-   blurred areas don't "band" on lower-end displays. Purely optional.
-   Plain opacity (no mix-blend-mode): mixing a full-viewport layer costs an
-   extra composite pass on every frame for an effect this subtle. */
-.grain {
-  position: absolute;
-  inset: 0;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
 
 /* ----------------------------------------------------------------------
@@ -196,19 +186,19 @@
   }
 
   /* Kill the GPU+CPU-heavy decorations: gradient-mask border (::before),
-     cursor glare blend (::after) and the full-viewport noise layer. */
+     cursor glare blend (::after). */
   .liquid-glass-card::before,
   .glass-card::before,
   .liquid-glass-card::after,
-  .glass-card::after,
-  .grain {
+  .glass-card::after {
     display: none;
   }
 
   [data-tilt] { will-change: auto; }
 
-  /* Super-light mobile: no interactive canvas grid — the static CSS grid
-     in .ambient-bg is the mobile backdrop (canvas bails out on display:none). */
+  /* Super-light mobile: no interactive shape-grid canvas — the static CSS
+     grid in .ambient-bg is the mobile backdrop (canvas bails out on
+     display:none). */
   .ambient-canvas {
     display: none;
   }

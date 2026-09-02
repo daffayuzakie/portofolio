@@ -1,8 +1,7 @@
 /* ==========================================================================
    ANIMATIONS
    Kept to small functional motion (spinner, reveal) that responds to
-   something the user did. No scroll-triggered fade-ins on every section —
-   the background drift lives in the ambient canvas (desktop only).
+   something the user did. No scroll-triggered fade-ins on every section.
    ========================================================================== */
 
 @keyframes spin {

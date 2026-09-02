@@ -134,10 +134,16 @@
 }
 
 /* Mobile flat: the ring keeps its (GPU-composited) orbit-run animation —
-   that's what spreads the 6 icons along the ellipse. Only the decorative
-   sheen/shadow costs are dropped; the items go solid, no glow, no shadow
-   repaint under motion. */
+   that's what spreads the 6 icons along the ellipse. The container is already
+   removed globally; here we just enlarge the ring and flatten the icon tiles
+   so mobile stays cheap and readable. */
 @media (max-width: 768px) {
+  /* Bigger ring on mobile. */
+  .orbit {
+    width: min(640px, 100%);
+    transform: translateY(0);
+  }
+
   .orbit-item {
     background-image: none;
     background-color: rgba(18, 18, 24, 0.94);

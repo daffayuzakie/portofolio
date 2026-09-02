@@ -30,13 +30,13 @@ css/
   base.css           -- reset + base element styles
   glass-engine.css    -- the reusable glass surface/border/glare classes
   components.css       -- dynamic island nav, hero, bento about, skill bars, projects, form, footer
-  animations.css        -- keyframes for the ambient blobs + small motion
+  animations.css        -- keyframes for small motion
   coverflow.css         -- vanilla port of the 21st.dev 3D Coverflow Carousel (projects section)
   orbit.css             -- big elliptical ring + orbiting logo icons (21st.dev OrbitImages geometry)
   responsive.css         -- breakpoints
 js/
   main.js            -- entry point, wires up every module below
-  ambient.js          -- interactive canvas city-grid background (ported from ShapeGrid)
+  ambient.js          -- static shape-grid background (ported from ShapeGrid)
   tilt.js              -- 3D tilt + cursor-tracked glare
   orbit.js             -- orbiting logo ring for the stack section (21st.dev port)
   coverflow.js         -- 3D coverflow carousel: drag/swipe, snap, dots, keyboard, filter sync
@@ -66,9 +66,14 @@ js/
 - **Tech stack**: each `.skill-item` in `index.html` pairs a logo (via
   `cdn.simpleicons.org/<slug>`), a proficiency label, and a `.skill-bar`
   fill percentage — edit these to match your actual toolkit and level.
-- **Background grid**: the animated city-grid lives in `js/ambient.js`
-  (grid size, drift direction/speed, hover trail), with fixed colors
-  (`#39606c` border, `#21d7e8` hover) on a dark-only theme.
+- **Background grid**: the static shape grid lives in `js/ambient.js`
+  (a vanilla port of the React ShapeGrid). Unlike the original it does not
+  drift — `speed` is fixed at `0` — only the cell under the cursor lights up
+  with a fading trail. Grid cell size, border/hover colours and the trail
+  length are the `squareSize` / `BORDER_COLOR` / `HOVER_FILL` /
+  `hoverTrailAmount` constants in that file. On mobile (`max-width: 768px`)
+  the canvas is skipped and the pure-CSS grid in `css/glass-engine.css`
+  shows instead.
 
 ## Browser support notes
 

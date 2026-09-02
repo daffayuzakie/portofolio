@@ -78,11 +78,13 @@
   --bg-2: #0c1030;
   --bg-3: #150a2b;
 
-  /* Base backdrop colour behind the interactive grid canvas — a deep,
+  /* Base backdrop colour behind the interactive shape-grid canvas — a deep,
      almost-black blue. The canvas strokes its own grid lines and hover
      fills (see js/ambient.js). */
   --grid-bg: #070a14;
 
+  /* Accent colours (kept for reference; the current background is the shape
+     grid in glass-engine.css / js/ambient.js, not CSS blobs). */
   --blob-a: #6c63ff; /* violet */
   --blob-b: #23d9c0; /* aurora teal */
   --blob-c: #ff7a59; /* ember coral */
