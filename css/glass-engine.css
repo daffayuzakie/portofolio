@@ -6,10 +6,12 @@
 
 /* ----------------------------------------------------------------------
    1. AMBIENT BACKGROUND
-   An interactive city-grid drawn on a full-viewport <canvas> (js/ambient.js):
-   the grid drifts in one direction and the cell under the cursor lights up
-   with a fading trail. Panels above use backdrop-filter, so the animated
-   grid is what the glass panels are actually "made of" visually.
+   Desktop: an interactive canvas grid (js/ambient.js, a vanilla port of the
+   React ShapeGrid) — the cell under the cursor lights up white with a fading
+   trail, and the grid drifts slowly. Mobile (<=768px): the canvas is hidden
+   and the pure-CSS "blueprint" grid below is the backdrop, so mobile stays
+   ultra-light. Panels above use backdrop-filter, so the backdrop grid is
+   what the glass panels are visually "made of".
    ------------------------------------------------------------------- */
 .ambient-bg {
   position: fixed;
@@ -17,25 +19,21 @@
   z-index: var(--z-bg);
   pointer-events: none; /* purely decorative; never intercepts clicks */
 
-  /* Base canvas behind the animated grid (theme-coloured, non-opaque so
-     lighter cells still read). */
+  /* Static "blueprint" grid beneath the canvas (also the full backdrop on
+     mobile). A pure-CSS line pattern: 1px line every 40px, no image
+     download. It is fully covered by the opaque canvas on desktop. */
   background-color: var(--grid-bg);
-
-  /* TEST: macOS wallpaper as the backdrop, so the liquid glass panels sit
-     over a real photo instead of the grid. Toggle .ambient-canvas back on
-     to restore the animated grid. */
-  background-image: url("../assets/macos wallpaper.jpg");
-  background-size: cover;
-  background-position: center;
-}
-
-/* Subtle dark wash so white text keeps contrast over bright wallpaper
-   areas — delete this block if you want the photo fully vivid. */
-.ambient-bg::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.15) 40%, rgba(0, 0, 0, 0.35));
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      rgba(57, 96, 108, 0.22) 0 1px,
+      transparent 1px 40px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(57, 96, 108, 0.22) 0 1px,
+      transparent 1px 40px
+    );
 }
 
 .ambient-canvas {
@@ -43,7 +41,9 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  display: none; /* TEST: grid hidden while the wallpaper preview is on */
+  display: block; /* interactive canvas grid on desktop; the <=768px block
+                     below hides it so mobile keeps the cheap CSS grid. */
+  z-index: 0;
 }
 
 /* A faint noise layer breaks up the smoothness of the gradients so large
@@ -177,14 +177,6 @@
    handsets scroll buttery smooth.
    ------------------------------------------------------------------- */
 @media (max-width: 768px) {
-  /* Wallpaper still paints a (tiny 640w) photo, but solid-fallback the bg
-     colour so it reads as a dark backdrop even before the image decodes. */
-  .ambient-bg {
-    background-image: url("../assets/macos wallpaper.mobile.jpg");
-    background-size: cover;
-    background-position: center;
-  }
-
   /* Flat cards: solid fill, no blur, no sheen, light-only shadow. */
   .liquid-glass-card,
   .glass-card,
@@ -214,4 +206,10 @@
   }
 
   [data-tilt] { will-change: auto; }
+
+  /* Super-light mobile: no interactive canvas grid — the static CSS grid
+     in .ambient-bg is the mobile backdrop (canvas bails out on display:none). */
+  .ambient-canvas {
+    display: none;
+  }
 }

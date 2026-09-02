@@ -133,17 +133,16 @@
   }
 }
 
-/* Mobile flat: freeze the rotating ring (no continuous 65s orbit animation)
-   and drop the glow filters — both are pure GPU cost with no real gain at
-   phone size. */
+/* Mobile flat: the ring keeps its (GPU-composited) orbit-run animation —
+   that's what spreads the 6 icons along the ellipse. Only the decorative
+   sheen/shadow costs are dropped; the items go solid, no glow, no shadow
+   repaint under motion. */
 @media (max-width: 768px) {
   .orbit-item {
-    animation: none;
-    will-change: auto;
     background-image: none;
     background-color: rgba(18, 18, 24, 0.94);
     border-color: var(--glass-border-b);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    box-shadow: none;
   }
   .orbit-ring-svg path {
     filter: none;

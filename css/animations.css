@@ -1,8 +1,8 @@
 /* ==========================================================================
    ANIMATIONS
    Kept to small functional motion (spinner, reveal) that responds to
-   something the user did. No scroll-triggered fade-ins on every section
-   and no ambient gradient drift — the background is a static grid now.
+   something the user did. No scroll-triggered fade-ins on every section —
+   the background drift lives in the ambient canvas (desktop only).
    ========================================================================== */
 
 @keyframes spin {

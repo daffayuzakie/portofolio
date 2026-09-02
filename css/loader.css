@@ -1,7 +1,7 @@
 /* ==========================================================================
    LOADER
    Full-screen overlay shown while the page warms up. It hides only after
-   every image (slides + wallpaper) has decoded, so nothing pops in or
+   every image and the headline webfont have decoded, so nothing pops in or
    re-renders mid-scroll. js/loader.js adds .is-loading to <html> while the
    overlay is up and toggles .is-done when everything is ready.
    ========================================================================== */

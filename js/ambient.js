@@ -1,13 +1,14 @@
 /**
  * ambient.js
  * Interactive city-grid backdrop drawn on a fixed full-viewport canvas
- * (converted from the React ShapeGrid component). The whole grid drifts in
- * one direction, and the cell under the cursor lights up with an easing
- * fill plus a fading trail. Grid uses fixed dark-on-dark colors (#39606c
- * lines, #21d7e8 hover) tuned for this site's dark-only theme.
+ * (a vanilla port of the React ShapeGrid component). The whole grid drifts
+ * gently, and the cell under the cursor lights up white with an easing fill
+ * plus a fading trail.
  *
- * Renders on a requestAnimationFrame loop that runs only while the canvas
- * is on screen and the page is visible; hover state is read once per frame.
+ * Runs on a requestAnimationFrame loop capped to ~30fps, and only while the
+ * canvas is on screen and the page is visible. On mobile the canvas stays
+ * display:none (glass-engine.css) so the cheap static CSS grid is used
+ * there instead.
  */
 export function initAmbient() {
   const bg = document.querySelector('.ambient-bg');
@@ -18,8 +19,7 @@ export function initAmbient() {
   canvas.setAttribute('aria-hidden', 'true');
   bg.appendChild(canvas);
 
-  // The grid is OFF while the wallpaper preview is on (glass-engine.css
-  // sets .ambient-canvas to display:none). Bail out before attaching any
+  // If the canvas is hidden (mobile flat mode), bail out before attaching any
   // listeners or starting a draw loop so a hidden canvas costs nothing.
   if (getComputedStyle(canvas).display === 'none') {
     canvas.remove();
@@ -30,10 +30,13 @@ export function initAmbient() {
 
   const squareSize = 40;
   const direction = 'right';
-  // Static grid: set to 0 so the background never drifts. Raise the value
-  // (e.g. 0.25) to restore the slow pan.
-  const speed = 0;
+  // Gentle drift (px per frame at ~30fps). Set to 0 for a fully static grid.
+  const speed = 0.5;
   const hoverTrailAmount = 6;
+
+  const BORDER_COLOR = 'rgba(120, 150, 170, 0.45)';
+  const HOVER_FILL = 'rgba(255, 255, 255, 0.6)';
+  const BASE_FILL = '#070a14'; // matches --grid-bg so no double-grid shows
 
   const gridOffset = { x: 0, y: 0 };
   const hoveredCell = { x: null, y: null };
@@ -43,6 +46,7 @@ export function initAmbient() {
   let requestRef = null;
   let isVisible = false;
   let isPageVisible = !document.hidden;
+  let lastFrame = 0;
 
   const resizeCanvas = () => {
     canvas.width = Math.max(1, Math.floor(bg.clientWidth));
@@ -51,15 +55,11 @@ export function initAmbient() {
   window.addEventListener('resize', resizeCanvas);
   resizeCanvas();
 
-  const getGridColors = () => ({
-    borderColor: '#39606c',
-    hoverFillColor: 'rgba(33, 215, 232, 0.5)',
-  });
-
   const drawGrid = () => {
-    const { borderColor, hoverFillColor } = getGridColors();
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Paint an opaque near-black base first so the CSS grid gradient behind
+    // the canvas is fully covered (no double-grid moiré).
+    ctx.fillStyle = BASE_FILL;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const offsetX = ((gridOffset.x % squareSize) + squareSize) % squareSize;
     const offsetY = ((gridOffset.y % squareSize) + squareSize) % squareSize;
@@ -76,12 +76,12 @@ export function initAmbient() {
         const alpha = cellOpacities.get(cellKey);
         if (alpha) {
           ctx.globalAlpha = Math.min(1, alpha);
-          ctx.fillStyle = hoverFillColor;
+          ctx.fillStyle = HOVER_FILL;
           ctx.fillRect(sx, sy, squareSize, squareSize);
           ctx.globalAlpha = 1;
         }
 
-        ctx.strokeStyle = borderColor;
+        ctx.strokeStyle = BORDER_COLOR;
         ctx.lineWidth = 1;
         ctx.strokeRect(sx, sy, squareSize, squareSize);
       }
@@ -138,7 +138,16 @@ export function initAmbient() {
     }
   };
 
-  const updateAnimation = () => {
+  const updateAnimation = (now = 0) => {
+    // Cap the draw loop to ~30fps (rAF fires at display refresh, typically
+    // 60/120Hz): a slowly-drifting grid doesn't need to repaint every frame,
+    // and halving the fill-rate keeps low-end desktops quiet.
+    if (now - lastFrame < 33) {
+      requestRef = requestAnimationFrame(updateAnimation);
+      return;
+    }
+    lastFrame = now;
+
     const wrapX = squareSize;
     switch (direction) {
       case 'right':

@@ -1,8 +1,8 @@
 /* Fullscreen loader that keeps the page hidden until every heavy asset is
-   decoded — the wallpaper background and all <img> slides are forced to load
-   upfront (nothing is lazy anymore), so scrolling never has to render or pop
-   anything later. The overlay fades away once everything is ready plus a
-   short minimum so the reveal feels intentional. */
+   decoded — all <img> slides and the Space Grotesk webfont are loaded and
+   decoded upfront (nothing is lazy anymore), so scrolling never has to
+   render or pop anything later. The overlay fades away once everything is
+   ready plus a short minimum so the reveal feels intentional. */
 export function initLoader() {
   const loader = document.querySelector('.loader');
   if (!loader) return;
@@ -43,28 +43,16 @@ export function initLoader() {
   };
 
   const whenReady = () => {
-    // The ambient wallpaper is a CSS background (not an <img>), so it
-    // doesn't show up in document.images — preload and fully decode it.
-    let wallpaper = Promise.resolve();
-    const bgEl = document.querySelector('.ambient-bg');
-    if (bgEl) {
-      const match = getComputedStyle(bgEl).backgroundImage.match(/url\(["']?([^"')]+)["']?\)/);
-      if (match) {
-        wallpaper = new Promise((resolve) => {
-          const img = new Image();
-          img.onload = () => img.decode().catch(() => undefined).then(resolve);
-          img.onerror = () => resolve();
-          img.src = match[1];
-        });
-      }
-    }
+    // The backdrop is now a pure-CSS grid (no image behind it), and the
+    // orbit icons are tiny CDN SVGs fetched on their own — nothing extra to
+    // preload here besides the <img> slides and the headline webfont.
 
     // The Space Grotesk webfont is the one family that could still reflow
     // headlines after the loader fades — wait for it to be applied too.
     const fonts = document.fonts ? document.fonts.ready : Promise.resolve();
 
     const waitAll = () =>
-      Promise.allSettled([...Array.from(document.images, waitFor), wallpaper, fonts]);
+      Promise.allSettled([...Array.from(document.images, waitFor), fonts]);
 
     // Hard cap: reveal once everything is done OR after MAX_WAIT, whichever
     // comes first — a failed/slow asset must never trap the page here.
