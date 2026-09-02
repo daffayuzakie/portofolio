@@ -134,9 +134,9 @@
 }
 
 /* Mobile flat: the ring keeps its (GPU-composited) orbit-run animation —
-   that's what spreads the 6 icons along the ellipse. The container is already
-   removed globally; here we just enlarge the ring and flatten the icon tiles
-   so mobile stays cheap and readable. */
+   that's what spreads the 6 icons along the ellipse. We enlarge the ring and
+   flatten the icon tiles so mobile stays cheap and readable. The .orbit-panel
+   container keeps its glass card look (flattened by glass-engine.css). */
 @media (max-width: 768px) {
   /* Bigger ring on mobile. */
   .orbit {
