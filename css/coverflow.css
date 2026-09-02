@@ -224,3 +224,24 @@
 @media (max-width: 720px) {
   .cf-caption p { display: none; }
 }
+
+/* Mobile flat coverflow: strip the 3D stage, the big blurred ambient blob
+   and the gradient-mask caption so the carousel is a cheap 2D slide track.
+   js/coverflow.js reads the same <768px breakpoint and renders one sharp
+   card at a time (no rotateY / translateZ / per-slide blur). */
+@media (max-width: 768px) {
+  .cf-viewport {
+    perspective: none;
+    perspective-origin: initial;
+  }
+  .cf-ambient {
+    display: none;
+  }
+  .cf-caption {
+    -webkit-mask-image: none;
+    mask-image: none;
+    background: linear-gradient(to top, rgba(18, 18, 24, 0.95), rgba(18, 18, 24, 0.55));
+  }
+  .cf-slide { border-color: var(--glass-border-b); }
+  .cf-caption p { display: none; }
+}

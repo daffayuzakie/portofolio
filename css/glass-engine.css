@@ -167,3 +167,51 @@
 @media (prefers-reduced-motion: reduce) {
   [data-tilt] { transform: none !important; }
 }
+
+/* ----------------------------------------------------------------------
+   MOBILE FLAT MODE
+   Phones get a deliberately flat, solid version of the glass: no backdrop
+   blur sampling, no specular-mask border, no glare blend, no full-screen
+   noise. The visionOS look is preserved on desktop; here we trade every
+   expensive GPU pass for a plain dark card with a thin border so low-end
+   handsets scroll buttery smooth.
+   ------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  /* Wallpaper still paints a (tiny 640w) photo, but solid-fallback the bg
+     colour so it reads as a dark backdrop even before the image decodes. */
+  .ambient-bg {
+    background-image: url("../assets/macos wallpaper.mobile.jpg");
+    background-size: cover;
+    background-position: center;
+  }
+
+  /* Flat cards: solid fill, no blur, no sheen, light-only shadow. */
+  .liquid-glass-card,
+  .glass-card,
+  .orbit-panel,
+  .glass-nav,
+  .cf-nav,
+  .contact-intro,
+  .filter-pill,
+  .form-field input,
+  .form-field textarea {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background-image: none;
+    background-color: rgba(18, 18, 24, 0.94);
+    border-color: var(--glass-border-b);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Kill the GPU+CPU-heavy decorations: gradient-mask border (::before),
+     cursor glare blend (::after) and the full-viewport noise layer. */
+  .liquid-glass-card::before,
+  .glass-card::before,
+  .liquid-glass-card::after,
+  .glass-card::after,
+  .grain {
+    display: none;
+  }
+
+  [data-tilt] { will-change: auto; }
+}

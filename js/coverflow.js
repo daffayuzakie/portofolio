@@ -23,6 +23,13 @@ export function initCoverflow() {
   let active = 0;
   let step = 0;
 
+  // Mobile flat mode: render one sharp card at a time on plain 2D X-offsets —
+  // no perspective, no rotateY, no translateZ, no per-slide blur. Cheapest
+  // path for low-end phones; the desktop render() below keeps the 3D fan.
+  const mobile =
+    window.matchMedia('(max-width: 768px)').matches ||
+    window.matchMedia('(pointer: coarse)').matches;
+
   const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 
   const visibleSlides = () =>
@@ -46,6 +53,22 @@ export function initCoverflow() {
     slides.forEach((el, i) => {
       const d = i - active;
       const abs = Math.min(Math.abs(d), 4);
+
+      if (mobile) {
+        // Flat track: in-view cards nudge right, actively-hidden ones fly
+        // off-screen instantly. Only opacity/transform animate — no heavy
+        // filter, no 3D, so mobile stays at 60fps while swiping.
+        const visible = Math.abs(d) <= 1;
+        el.style.transform = `translateX(calc(-50% + ${d * step}px)) translateY(-50%) scale(${d === 0 ? 1 : 0.96})`;
+        el.style.zIndex = String(60 - abs * 12);
+        el.style.opacity = String(visible ? (d === 0 ? 1 : 0) : 0);
+        el.style.filter = 'none';
+        el.style.visibility = 'visible';
+        el.classList.toggle('is-active', d === 0);
+        el.setAttribute('aria-selected', d === 0 ? 'true' : 'false');
+        return;
+      }
+
       const px = d * step + offset;
       const scale = d === 0 ? 1 : Math.max(0.62, 0.84 - abs * 0.08);
       const opacity = d === 0 ? 1 : Math.max(0.22, 1 - abs * 0.3);
