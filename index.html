@@ -32,8 +32,12 @@
        mid-scroll renders on slow connections.
   ============================================================= -->
   <div class="loader" role="status" aria-label="Loading">
-    <span class="loader-ring"></span>
+    <span class="loader-orb">
+      <span class="loader-ring"></span>
+      <span class="loader-core"></span>
+    </span>
     <span class="loader-label">Loading</span>
+    <span class="loader-progress" aria-hidden="true"><span class="loader-progress-bar"></span></span>
   </div>
 
   <!-- ============================================================
@@ -79,7 +83,7 @@
           <h1 class="hero-title">Fullstack Developer focused on intuitive user interfaces and scalable code ;</h1>
           <p class="hero-bio">
             I'm Daffa, currently in Class XII RPL. Most of what I know I picked up by shipping
-            full projects end to end. point-of-sale systems, registration portals, small games â
+            full projects end to end. point-of-sale systems, registration portals, small games.
             rather than just following tutorials.
           </p>
           <div class="hero-actions">
@@ -143,7 +147,7 @@
           <h3>Quick highlights</h3>
           <ul class="highlight-list">
             <li><span class="highlight-num">6</span>projects built and shipped from scratch</li>
-            <li><span class="highlight-num">PHP Â· Laravel</span>as a primary backend stack</li>
+            <li><span class="highlight-num">PHP · Laravel</span>as a primary backend stack</li>
             <li><span class="highlight-num">Git</span>used across every project, solo and shared</li>
           </ul>
         </article>
@@ -156,7 +160,7 @@
     <section class="skills" id="skills">
       <div class="section-head">
         <h2>Tech stack</h2>
-        <p class="section-sub">Laravel is what I reach for most â it powers the majority of my projects.</p>
+        <p class="section-sub">Laravel is what I reach for most. it powers the majority of my projects.</p>
       </div>
 
       <div class="orbit-panel liquid-glass-card">
@@ -351,7 +355,7 @@
 
   <footer class="site-footer">
     <p>&copy; <span id="year"></span> Daffa. Built from scratch with HTML, CSS &amp; JavaScript.</p>
-    <button class="back-to-top" id="back-to-top" aria-label="Back to top">â</button>
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">up!</button>
   </footer>
 
   <!-- ES module entry point â see js/main.js. Requires a local server; see README. -->

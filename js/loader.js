@@ -1,8 +1,9 @@
 /* Fullscreen loader that keeps the page hidden until every heavy asset is
    decoded — all <img> slides and the Space Grotesk webfont are loaded and
    decoded upfront (nothing is lazy anymore), so scrolling never has to
-   render or pop anything later. The overlay fades away once everything is
-   ready plus a short minimum so the reveal feels intentional. */
+   render or pop anything later. While it is up, js drives a smooth progress
+   bar towards 100% so the wait feels intentional, then the overlay fades
+   away. */
 export function initLoader() {
   const loader = document.querySelector('.loader');
   if (!loader) return;
@@ -12,9 +13,18 @@ export function initLoader() {
   const MAX_WAIT = 8000;   // reveal anyway if anything is slow/failed, so the
                            // page is never soft-locked in a loading screen.
 
+  const barEl = loader.querySelector('.loader-progress-bar');
+  let progress = 0;
+
+  const setProgress = (next) => {
+    progress = Math.max(progress, Math.min(100, next));
+    if (barEl) barEl.style.width = `${progress}%`;
+  };
+
   document.documentElement.classList.add('is-loading');
 
   const hide = () => {
+    setProgress(100);
     document.documentElement.classList.remove('is-loading');
     loader.classList.add('is-done');
     // Clean up after the fade; fallback in case transitionend never fires.
@@ -46,13 +56,28 @@ export function initLoader() {
     // The backdrop is now a pure-CSS grid (no image behind it), and the
     // orbit icons are tiny CDN SVGs fetched on their own — nothing extra to
     // preload here besides the <img> slides and the headline webfont.
-
-    // The Space Grotesk webfont is the one family that could still reflow
-    // headlines after the loader fades — wait for it to be applied too.
+    const images = Array.from(document.images);
     const fonts = document.fonts ? document.fonts.ready : Promise.resolve();
+    const total = images.length + 1; // +1 for the webfont
+
+    let settled = 0;
+    const bump = () => {
+      settled += 1;
+      setProgress(Math.round((settled / total) * 100));
+    };
+
+    // Report each asset as it lands so the bar crawls realistically forwards.
+    images.forEach((img) => {
+      if (img.complete) bump();
+      else {
+        img.addEventListener('load', bump, { once: true });
+        img.addEventListener('error', bump, { once: true });
+      }
+    });
+    fonts.then(bump);
 
     const waitAll = () =>
-      Promise.allSettled([...Array.from(document.images, waitFor), fonts]);
+      Promise.allSettled([...images.map(waitFor), fonts]).then(bump);
 
     // Hard cap: reveal once everything is done OR after MAX_WAIT, whichever
     // comes first — a failed/slow asset must never trap the page here.
