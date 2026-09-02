@@ -141,20 +141,21 @@
 @media (max-width: 768px) {
   /* Bigger ring + much bigger icons on mobile (desktop is left as-is). */
   .orbit {
-    --orbit-item: 170px;
-    width: min(680px, 100%);
+    --orbit-item: 200px;
+    width: min(720px, 100%);
     transform: translateY(0);
   }
 
-  /* Taller oval: lift ry from 160 up to 280 so the ellipse is visually
-     bigger. The visible ring line (CSS `d` on the SVG path) and the path the
-     icons ride (`offset-path`) must move together to stay in sync. */
+  /* Taller oval: lift ry from 160 up to 320 so the ellipse is visually
+     bigger and the larger icons have room on the path. The visible ring line
+     (CSS `d` on the SVG path) and the path the icons ride (`offset-path`)
+     must move together to stay in sync. */
   .orbit-ring-svg path {
-    d: path("M 0 700 A 700 280 0 1 0 1400 700 A 700 280 0 1 0 0 700");
+    d: path("M 0 700 A 700 320 0 1 0 1400 700 A 700 320 0 1 0 0 700");
     filter: none;
   }
   .orbit-item {
-    offset-path: path("M 0 700 A 700 280 0 1 0 1400 700 A 700 280 0 1 0 0 700");
+    offset-path: path("M 0 700 A 700 320 0 1 0 1400 700 A 700 320 0 1 0 0 700");
     background-image: none;
     background-color: rgba(18, 18, 24, 0.94);
     border-color: var(--glass-border-b);
