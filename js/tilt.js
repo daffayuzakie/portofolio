@@ -13,7 +13,12 @@
  */
 export function initTilt() {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
   const cards = document.querySelectorAll('.liquid-glass-card');
+
+  // Phones/tablets have no hover to track and composite blend overlays
+  // cheaply enough not to matter; skip the pointer listeners entirely.
+  if (reduceMotion || coarsePointer) return;
 
   cards.forEach((card) => {
     const hasTilt = card.hasAttribute('data-tilt') && !reduceMotion;
