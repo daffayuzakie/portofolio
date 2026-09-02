@@ -1,0 +1,222 @@
+/* ==========================================================================
+   COVERFLOW
+   Vanilla port of the 21st.dev "3D Coverflow Carousel"
+   (@dg.singh252525/components/3-d-coverflow-carousel): a fan of cards in
+   perspective, the active one square in the centre, the rest angled,
+   scaled and blurred away. Behaviour lives in js/coverflow.js.
+   ========================================================================== */
+
+.coverflow {
+  position: relative;
+  /* Break out past the section's 1200px content box so the fan has room:
+     span the full viewport via the classic margin trick, then clip at the
+     carousel itself so nothing creates a page-level horizontal scrollbar
+     or bleeds upward into the Stack section / the Projects heading. */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-top: clamp(2.5rem, 5vw, 4.5rem);
+  padding: 0 var(--space-5) var(--space-6);
+  overflow: clip;
+  --cf-width: clamp(320px, 62vw, 760px);
+}
+@supports not (overflow: clip) {
+  .coverflow { overflow-x: hidden; }
+}
+
+/* Synchronized ambient glow: a blurred orbe behind the stage that trails
+   the active slide's accent colour (read from data-ambient in JS). */
+.cf-ambient {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(60vw, 560px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  filter: blur(var(--blur-strong));
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: -1;
+  transition: background var(--duration-slow) var(--ease-glass);
+}
+
+/* The viewport is sized to hug the cards instead of being a tall empty
+   box: its height tracks the slide width (16/10 media) so the fan is
+   centred with no dead space pushing the arrows far away — and nothing
+   tall enough to collide with the section heading above. */
+.cf-viewport {
+  position: relative;
+  perspective: 2000px;
+  perspective-origin: 50% 30%;
+  height: calc(var(--cf-width) * 0.68);
+  min-height: 240px;
+  border-radius: var(--radius-lg);
+  cursor: grab;
+  touch-action: pan-y;
+}
+.cf-viewport.is-grabbing,
+.cf-viewport:active { cursor: grabbing; }
+.cf-viewport:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.cf-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* The fanned cards. Position is 50%/50% + a translate(-50%,-50%)
+   baked into the JS transform so the 3D maths only ever reasons about
+   offsets from the centre. */
+.cf-slide {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--cf-width);
+  padding: 0;
+  overflow: hidden;
+  touch-action: pan-y;
+  transition:
+    transform var(--duration-mid) var(--ease-glass),
+    opacity var(--duration-mid) var(--ease-glass),
+    filter var(--duration-mid) var(--ease-glass);
+}
+.cf-stage.is-dragging .cf-slide { transition: none; }
+.cf-slide.is-hidden { display: none; }
+
+.cf-media {
+  aspect-ratio: 16 / 10;
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.cf-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+}
+/* Initials placeholder (data-initials) shows only until a real screenshot
+   <img> is present — when one exists it sits above and covers it. */
+.cf-media::before {
+  content: attr(data-initials);
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.45);
+  z-index: 0;
+}
+
+/* On-tile caption with a masked bottom reveal. */
+.cf-caption {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-4) var(--space-5);
+  overflow: hidden;
+  background: linear-gradient(to top, rgba(6, 8, 20, 0.88) 0%, rgba(6, 8, 20, 0.4) 52%, transparent 78%);
+  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 58%, transparent 86%);
+  mask-image: linear-gradient(to top, #000 0%, #000 58%, transparent 86%);
+}
+.cf-caption h3 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  margin: 0;
+  color: #fff;
+}
+.cf-caption p {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 58ch;
+}
+.cf-caption .tag-row { margin-top: 0; }
+
+/* Controls row: round glass arrows + progress + dots. */
+.cf-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: 20px;
+}
+
+/* Round visionOS liquid-glass arrows: same clear body, blur, crisp border
+   and bevel insets as the navbar and cards, just smaller. */
+.cf-nav {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.15),
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.85),
+    inset 0 -1.5px 2px rgba(0, 0, 0, 0.12);
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease-glass),
+    border-color var(--duration-fast) var(--ease-glass),
+    transform var(--duration-fast) var(--ease-glass),
+    box-shadow var(--duration-fast) var(--ease-glass);
+}
+.cf-nav:hover {
+  background-color: rgba(255, 255, 255, 0.28);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+.cf-nav:active { transform: scale(0.96); }
+
+.cf-progress {
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-small);
+  color: var(--text-tertiary);
+  min-width: 3.5ch;
+  text-align: center;
+}
+
+.cf-dots {
+  display: flex;
+  gap: var(--space-2);
+}
+.cf-dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--glass-border-b);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    width var(--duration-mid) var(--ease-glass),
+    background-color var(--duration-mid) var(--ease-glass),
+    border-color var(--duration-mid) var(--ease-glass);
+}
+.cf-dot:hover { border-color: var(--glass-border-a); }
+.cf-dot.is-active {
+  width: 22px;
+  background: rgba(255, 255, 255, 0.9);
+  border-color: transparent;
+}
+
+/* On short screens hide the description so the tile stays tidy. */
+@media (max-width: 720px) {
+  .cf-caption p { display: none; }
+}

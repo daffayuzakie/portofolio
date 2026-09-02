@@ -1,0 +1,128 @@
+/* ==========================================================================
+   DESIGN TOKENS
+   Every color, blur, shadow and spacing value used anywhere in the site
+   lives here. Changing the whole aesthetic — colors, tighter/looser,
+   more/less glass — should mostly mean editing this one file.
+   ========================================================================== */
+
+:root {
+  /* -- Typography ---------------------------------------------------------
+     Two families, clearly distinct roles: Space Grotesk carries personality
+     for headlines, the macOS San Francisco stack for everything else —
+     crisp system type on Apple devices, Segoe/Roboto elsewhere. */
+  --font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* Fluid type scale: clamp(min, preferred, max) so headings scale with
+     viewport width instead of jumping at breakpoints. */
+  --fs-h1: clamp(2.1rem, 1.4rem + 3.2vw, 3.6rem);
+  --fs-h2: clamp(1.6rem, 1.3rem + 1.4vw, 2.25rem);
+  --fs-h3: clamp(1.1rem, 1rem + 0.4vw, 1.25rem);
+  --fs-body: clamp(0.95rem, 0.9rem + 0.2vw, 1.05rem);
+  --fs-small: 0.85rem;
+
+  /* -- Spacing scale -------------------------------------------------------
+     1.5x modular scale keeps rhythm consistent across sections. */
+  --space-1: 0.4rem;
+  --space-2: 0.8rem;
+  --space-3: 1.2rem;
+  --space-4: 1.6rem;
+  --space-5: 2.4rem;
+  --space-6: 3.2rem;
+  --space-7: 4.8rem;
+  --space-8: 7.2rem;
+
+  /* -- Radius ---------------------------------------------------------------
+     Radius is tied to *role*, not applied uniformly — pills are fully
+     round, cards share one family radius, small controls get a tighter one. */
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --radius-pill: 999px;
+
+  /* -- Motion ---------------------------------------------------------------
+     A single custom easing curve used everywhere glass "settles" into
+     place, so every hover/tilt/reveal feels like the same physical
+     material rather than mismatched defaults. */
+  --ease-glass: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 180ms;
+  --duration-mid: 380ms;
+  --duration-slow: 900ms;
+
+  /* -- Glass physics ---------------------------------------------------------
+     backdrop-filter blur softens whatever sits behind a panel; saturate()
+     is layered on top because blur alone desaturates and flattens colour —
+     boosting saturation keeps the ambient blobs looking rich through the
+     glass instead of muddy grey. See glass-engine.css for how these combine. */
+  --blur-nav: 22px;
+  --blur-card: 28px;
+  --blur-strong: 40px;
+  --saturate-glass: 190%;
+
+  /* -- Z-index scale ---------------------------------------------------------- */
+  --z-bg: -1;
+  --z-nav: 50;
+  --z-overlay: 60;
+
+  color-scheme: dark;
+}
+
+/* ==========================================================================
+   THEME
+   A single dark theme (this site is dark-only). A deep indigo-to-violet
+   gradient rather than flat near-black — the hue cast is what makes it read
+   as "space behind glass" instead of a plain dark-mode background.
+   ========================================================================== */
+:root {
+  --bg-1: #060814;
+  --bg-2: #0c1030;
+  --bg-3: #150a2b;
+
+  /* Base backdrop colour behind the interactive grid canvas — a deep,
+     almost-black blue. The canvas strokes its own grid lines and hover
+     fills (see js/ambient.js). */
+  --grid-bg: #070a14;
+
+  --blob-a: #6c63ff; /* violet */
+  --blob-b: #23d9c0; /* aurora teal */
+  --blob-c: #ff7a59; /* ember coral */
+
+  --text-primary: #f4f5fb;
+  --text-secondary: rgba(244, 245, 251, 0.68);
+  --text-tertiary: rgba(244, 245, 251, 0.42);
+
+  --accent: #5eead4;
+  --accent-strong: #2dd4bf;
+  --accent-contrast: #04211c;
+
+  /* Glass surface fills — the alpha value IS the "thickness" of the glass.
+     Lower alpha = clearer/thinner glass, higher = frostier/thicker. */
+  --glass-fill: rgba(255, 255, 255, 0.03);
+  --glass-fill-strong: rgba(255, 255, 255, 0.05);
+  /* The full-surface "wet glass" sheen and the soft inner glow that make
+     translucent panels read as a curved lens instead of flat rectangles. */
+  --glass-sheen: linear-gradient(165deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 38%, transparent 60%);
+  --glass-glow: rgba(255, 255, 255, 0.12);
+  --glass-border-a: rgba(255, 255, 255, 0.55); /* bright edge of the border gradient */
+  --glass-border-b: rgba(255, 255, 255, 0.06); /* dim edge of the border gradient */
+  --glass-highlight: rgba(255, 255, 255, 0.55); /* inset top-rim catch-light */
+  --glass-shade: rgba(0, 0, 0, 0.35); /* inset bottom-rim shade */
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 22px -12px rgba(0, 0, 0, 0.55);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.32), 0 20px 45px -16px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 6px 12px rgba(0, 0, 0, 0.35), 0 40px 80px -24px rgba(0, 0, 0, 0.68);
+
+  --danger: #ff8a8a;
+  --success: #6ee7b7;
+
+  color-scheme: dark;
+}
+
+/* Respect users who've asked the OS for less motion — see animations.css */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-mid: 0ms;
+    --duration-slow: 0ms;
+  }
+}

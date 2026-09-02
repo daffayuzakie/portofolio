@@ -1,0 +1,134 @@
+/* ==========================================================================
+   ORBIT (STACK SECTION)
+   Icons travel along the 21st.dev "OrbitImages" ellipse geometry (rx 700 /
+   ry 160 in a 1400x1400 design canvas), staggered by a per-item negative
+   animation-delay so they form a rotating ring around a big visible ring
+   outline. The whole canvas scales to the section via --orbit-scale,
+   keeping the width while the ring sits flat and short.
+   Items are injected by js/orbit.js.
+   ========================================================================== */
+
+.orbit-panel {
+  position: relative;
+  border-radius: var(--radius-lg);
+  padding: var(--space-6) var(--space-5);
+  margin-top: var(--space-4);
+}
+/* The big panel reuses the full liquid-glass card look (frosted fill,
+   diagonal sheen, specular border) but is inert — drop the interactive
+   cursor glare that .liquid-glass-card::after would normally add. */
+.orbit-panel.liquid-glass-card::after {
+  content: none;
+}
+
+.orbit {
+  position: relative;
+  width: min(820px, 100%);
+  /* Half-height (2:1): the ring is short, so the square canvas box was
+     wasting vertical space and blowing past the section's 100vh. */
+  aspect-ratio: 2 / 1;
+  margin: 0 auto;
+  transform: translateY(24px); /* slight downward bias, ring stays clear of the panel edge */
+  --orbit-item: 128px;
+}
+
+.orbit-inner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1400px;
+  height: 1400px;
+  transform: translate(-50%, -50%) scale(var(--orbit-scale, 0.55));
+  transform-origin: center;
+}
+
+.orbit-rotator {
+  position: absolute;
+  inset: 0;
+  transform: none; /* flat ellipse: same width, shorter height */
+}
+
+.orbit-ring-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.orbit-ring-svg path {
+  fill: none;
+  stroke: var(--glass-border-a);
+  stroke-opacity: 0.35;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 24px rgba(94, 234, 212, 0.18));
+}
+
+.orbit-items {
+  position: absolute;
+  inset: 0;
+}
+
+/* Each icon's centre rides the flat ellipse path (rx 700 / ry 160 in the
+   1400px design canvas). The tile itself is a small liquid-glass surface
+   with the logo kept upright. */
+.orbit-item {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--orbit-item);
+  height: var(--orbit-item);
+  offset-path: path("M 0 700 A 700 160 0 1 0 1400 700 A 700 160 0 1 0 0 700");
+  offset-anchor: center center;
+  offset-rotate: 0deg;
+  animation: orbit-run 65s linear infinite;
+  will-change: offset-distance;
+
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-md);
+  /* Glass tile: the tint/border/bevel from the navbar, but NO backdrop
+     blur of its own — the tiles ride on top of the already-frosted
+     .orbit-panel, so sampling + blurring behind them every animation
+     frame is wasted GPU work (6 tiles × 60fps). */
+  background-color: rgba(255, 255, 255, 0.18);
+  background-image: var(--glass-sheen);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.15),
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.85),
+    inset 0 -1.5px 2px rgba(0, 0, 0, 0.12);
+}
+
+@keyframes orbit-run {
+  from { offset-distance: 0%; }
+  to { offset-distance: 100%; }
+}
+
+.orbit-item > div {
+  width: 100%;
+  height: 100%;
+  transform: none; /* no wrapper rotation to cancel anymore */
+  display: grid;
+  place-items: center;
+  padding: var(--space-3);
+}
+.orbit-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.45));
+}
+
+/* Without offset-path support there is nothing to animate — hide the orbit.
+   Reduced-motion users get a clean, static section instead. */
+@supports not (offset-path: path("M 0 0")) {
+  .orbit { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .orbit { display: none; }
+}
+
+@media (max-width: 720px) {
+  .orbit {
+    width: min(520px, 100%);
+  }
+}

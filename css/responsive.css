@@ -1,0 +1,91 @@
+/* ==========================================================================
+   RESPONSIVE
+   Mobile-first content already reads fine stacked; these breakpoints
+   mostly collapse multi-column grids to single columns and swap the nav
+   for a slide-down glass panel.
+   ========================================================================== */
+
+@media (max-width: 960px) {
+  .hero-card {
+    grid-template-columns: 1fr;
+  }
+  .hero-portrait-frame {
+    order: -1;
+    max-width: 240px;
+    margin: 0 auto;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+  .about-card--bg,
+  .about-card--connect,
+  .about-card--highlights {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .about-card--highlights .highlight-list {
+    grid-template-columns: 1fr;
+  }
+  .about-card--highlights .highlight-list li {
+    border-right: none;
+    border-bottom: 1px solid var(--glass-border-b);
+    padding: var(--space-3) 0;
+  }
+  .about-card--highlights .highlight-list li:last-child { border-bottom: none; }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  section {
+    padding: var(--space-6) var(--space-3);
+  }
+
+  /* The navbar stays fully visible on mobile — no hamburger / dropdown.
+     The visionOS pill just clamps to the viewport width. */
+  .menu-toggle {
+    display: none;
+  }
+
+  .nav-bar {
+    max-width: calc(100vw - var(--space-3));
+  }
+
+  .glass-nav {
+    max-width: 100%;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    padding: 6px 10px;
+  }
+
+  .nav-links {
+    gap: 2px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .nav-links::-webkit-scrollbar { display: none; }
+
+  .nav-links a {
+    padding: 8px 12px;
+    white-space: nowrap;
+    flex: none;
+  }
+
+  /* The sliding capsule still drives the active link on mobile too. */
+  .nav-indicator {
+    display: block;
+  }
+  .nav-links a.is-active { color: #000000; }
+
+@media (max-width: 520px) {
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .btn { justify-content: center; }
+}

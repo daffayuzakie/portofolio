@@ -1,0 +1,101 @@
+/* ==========================================================================
+   RESET & BASE
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* JS takes over smooth-scrolling with an offset for the sticky nav
+   (see js/scrollSpy.js); if JS fails to load, native smooth-scroll
+   above is still a reasonable fallback. */
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--bg-1);
+  transition: background var(--duration-mid) var(--ease-glass), color var(--duration-mid) var(--ease-glass);
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.15;
+  margin: 0 0 var(--space-3);
+  letter-spacing: -0.01em;
+}
+
+h1 { font-size: var(--fs-h1); font-weight: 700; }
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h3); }
+
+p {
+  margin: 0 0 var(--space-3);
+  color: var(--text-secondary);
+  max-width: 62ch; /* keep body copy under ~80 characters per line */
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+section {
+  position: relative;
+  padding: var(--space-7) var(--space-5);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-head {
+  margin-bottom: var(--space-5);
+  max-width: 640px;
+}
+
+.section-sub {
+  margin-top: -var(--space-2);
+}
+
+/* Visible keyboard focus everywhere — glass surfaces are low-contrast by
+   nature, so focus needs its own strong, consistent treatment rather than
+   relying on the browser default outline against a blurred background. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
