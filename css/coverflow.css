@@ -150,11 +150,15 @@
   align-items: center;
   gap: var(--space-3);
   margin-top: 20px;
+  flex-wrap: wrap;
 }
 
 /* Round visionOS liquid-glass arrows: same clear body, blur, crisp border
-   and bevel insets as the navbar and cards, just smaller. */
+   and bevel insets as the navbar and cards, just smaller. flex: 0 0 auto
+   stops the row from crushing them flat (height-stays/width-shrinks) when
+   the row is wider than a phone viewport. */
 .cf-nav {
+  flex: 0 0 auto;
   width: 44px;
   height: 44px;
   display: grid;

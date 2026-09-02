@@ -11,6 +11,7 @@ import { initCoverflow } from './coverflow.js';
 import { initFilter } from './filter.js';
 import { initScrollSpy } from './scrollSpy.js';
 import { initFormValidation } from './formValidation.js';
+import { initLoader } from './loader.js';
 
 const yearEl = document.getElementById('year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
@@ -22,6 +23,7 @@ initCoverflow();
 initFilter();
 initScrollSpy();
 initFormValidation();
+initLoader();
 
 // Mobile nav toggle — lives here rather than its own file since it's a
 // handful of lines with no state anything else needs to read.
